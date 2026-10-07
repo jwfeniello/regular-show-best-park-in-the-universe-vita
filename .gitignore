@@ -1,0 +1,20 @@
+build/
+data/
+analysis/
+__pycache__/
+*.py[cod]
+*.o
+*.a
+*.so
+*.apk
+*.obb
+*.vpk
+*.elf
+*.self
+*.psp2dmp
+*.log
+eboot.bin
+
+# Upstream sample programs and superseded local launcher placeholders.
+/lib/vitagl/samples/
+/extras/livearea/*.svg
