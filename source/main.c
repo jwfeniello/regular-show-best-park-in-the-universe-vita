@@ -17,7 +17,7 @@ so_module so_mod;
 int main(void) {
     park_log_init();
 #ifdef PARK_DIAGNOSTICS
-    l_info("Best Park in the Universe Vita build 0.8");
+    l_info("Best Park in the Universe Vita build 0.10");
     SceKernelThreadInfo thread_info={.size=sizeof(thread_info)};
     if(sceKernelGetThreadInfo(sceKernelGetThreadId(),&thread_info)==0)
         l_info("Main thread stack: %p, %u bytes",thread_info.stack,

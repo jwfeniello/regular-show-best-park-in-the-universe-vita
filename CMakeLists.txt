@@ -14,7 +14,7 @@ include("${VITASDK}/share/vita.cmake" REQUIRED)
 set(VITA_APP_NAME "Best Park in the Universe")
 set(VITA_TITLEID "BPARK0001")
 set(VITA_VPKNAME "best_park_vita")
-set(VITA_VERSION "00.08")
+set(VITA_VERSION "00.10")
 set(VITA_MKSFOEX_FLAGS "-d ATTRIBUTE2=12")
 
 # Optional: used for "send" and "dump" targets
@@ -103,10 +103,13 @@ set(SOURCES
     source/main.c
     source/park.c
     source/gamepad.c
+    source/prompts.c
+    source/prompts_native.c
     source/park_compat.c
     source/audio.c
     source/saves.c
     source/text.c
+    source/button_glyphs.c
     source/assets.c
     source/java_refs.c
     source/offline.c
@@ -263,4 +266,13 @@ vita_create_vpk(${VITA_VPKNAME}.vpk ${VITA_TITLEID} eboot.bin
                 ${CMAKE_SOURCE_DIR}/extras/livearea/pic0.png sce_sys/pic0.png
                 ${CMAKE_SOURCE_DIR}/extras/livearea/startup.png sce_sys/livearea/contents/startup.png
                 ${CMAKE_SOURCE_DIR}/extras/livearea/bg0.png sce_sys/livearea/contents/bg0.png
-                ${CMAKE_SOURCE_DIR}/extras/livearea/template.xml sce_sys/livearea/contents/template.xml)
+                ${CMAKE_SOURCE_DIR}/extras/livearea/template.xml sce_sys/livearea/contents/template.xml
+                ${CMAKE_SOURCE_DIR}/extras/prompts/square.png prompts/square.png
+                ${CMAKE_SOURCE_DIR}/extras/prompts/cross.png prompts/cross.png
+                ${CMAKE_SOURCE_DIR}/extras/prompts/triangle.png prompts/triangle.png
+                ${CMAKE_SOURCE_DIR}/extras/prompts/stick.png prompts/stick.png
+                ${CMAKE_SOURCE_DIR}/extras/prompts/r.png prompts/r.png
+                ${CMAKE_SOURCE_DIR}/extras/prompts/help_move.png prompts/help_move.png
+                ${CMAKE_SOURCE_DIR}/extras/prompts/help_attack.png prompts/help_attack.png
+                ${CMAKE_SOURCE_DIR}/extras/prompts/help_tag.png prompts/help_tag.png
+                ${CMAKE_SOURCE_DIR}/extras/prompts/help_super.png prompts/help_super.png)

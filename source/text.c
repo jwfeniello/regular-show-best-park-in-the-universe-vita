@@ -1,6 +1,7 @@
 #include "text.h"
 #include "park.h"
 #include "assets.h"
+#include "button_glyphs.h"
 #include "utils/logger.h"
 #include <stdlib.h>
 #include <stdio.h>
@@ -29,6 +30,14 @@ static int next_cp(const unsigned char **at) {
     while(n--){if((*p&0xc0)!=0x80){c=0xfffd;break;}c=(c<<6)|(*p++&63);}
     *at=p;return (int)c;
 }
+static float advance(Font *f,int cp,int size,float scale) {
+    if (park_button_glyph(cp)) return park_button_advance(cp,size);
+    int a;stbtt_GetCodepointHMetrics(&f->font,cp,&a,NULL);return a*scale;
+}
+static float kern(Font *f,int previous,int cp,float scale) {
+    if (park_button_glyph(previous) || park_button_glyph(cp)) return 0;
+    return stbtt_GetCodepointKernAdvance(&f->font,previous,cp)*scale;
+}
 void park_text_bitmap(const char *text,const char *name,int size,int align,int width,int height) {
     Font *f=get_font(name);if(!f)return;
     if(size<1)size=1;if(size>256)size=256;
@@ -42,8 +51,7 @@ void park_text_bitmap(const char *text,const char *name,int size,int align,int w
     while(start<n && count<256) {
         int i=start,lastspace=-1;float w=0,spacewidth=0;
         for(;i<n && cp[i]!='\n';i++) {
-            int advance;stbtt_GetCodepointHMetrics(&f->font,cp[i],&advance,NULL);
-            float dx=advance*scale;if(i>start)dx+=stbtt_GetCodepointKernAdvance(&f->font,cp[i-1],cp[i])*scale;
+            float dx=advance(f,cp[i],size,scale);if(i>start)dx+=kern(f,cp[i-1],cp[i],scale);
             if(width>0 && w+dx>width && i>start){if(lastspace>=start){i=lastspace;w=spacewidth;}break;}
             if(cp[i]==' '){lastspace=i;spacewidth=w;}w+=dx;
         }
@@ -61,14 +69,18 @@ void park_text_bitmap(const char *text,const char *name,int size,int align,int w
     for(int l=0;l<count;l++,y+=lineheight) {
         float x=(align&15)==2?w-lines[l].width:(align&15)==3?(w-lines[l].width)/2:0;
         for(int i=lines[l].start;i<lines[l].end;i++) {
-            if(i>lines[l].start)x+=stbtt_GetCodepointKernAdvance(&f->font,cp[i-1],cp[i])*scale;
+            if(i>lines[l].start)x+=kern(f,cp[i-1],cp[i],scale);
+            if(park_button_glyph(cp[i])) {
+                park_button_draw(cp[i],size,rgba,w,h,x,y);
+                x+=advance(f,cp[i],size,scale);continue;
+            }
             int bw,bh,bx,by;unsigned char *b=stbtt_GetCodepointBitmap(&f->font,0,scale,cp[i],&bw,&bh,&bx,&by);
             if(b)for(int yy=0;yy<bh;yy++)for(int xx=0;xx<bw;xx++) {
                 int dx=(int)floorf(x)+bx+xx,dy=y+by+yy;if(dx<0 || dy<0 || dx>=w || dy>=h)continue;
                 unsigned a=b[yy*bw+xx];unsigned char *d=rgba+4*((size_t)dy*w+dx);
                 unsigned v=a+d[3]*(255-a)/255;d[0]=d[1]=d[2]=d[3]=(unsigned char)v;
             }
-            stbtt_FreeBitmap(b,NULL);int adv;stbtt_GetCodepointHMetrics(&f->font,cp[i],&adv,NULL);x+=adv*scale;
+            stbtt_FreeBitmap(b,NULL);x+=advance(f,cp[i],size,scale);
         }
     }
     void (*deliver)(JNIEnv *,jobject,int,int,jbyteArray)=(void *)park_symbol("Java_org_cocos2dx_lib_Cocos2dxBitmap_nativeInitBitmapDC");

@@ -1,6 +1,6 @@
 # Regular Show: Best Park in the Universe for PS Vita
 
-A heavily AI-assisted port of the Android version of **Regular Show: Best Park in the Universe** (v1.2.1), using vitaGL. Includes physical controls, music and sound effects, and custom LiveArea artwork.
+A heavily AI-assisted port of the Android version of **Regular Show: Best Park in the Universe** (v1.2.1), using vitaGL. Includes physical controls, Vita button prompts, music and sound effects, and custom LiveArea artwork.
 
 ## Installation
 

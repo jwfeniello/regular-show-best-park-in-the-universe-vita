@@ -23,6 +23,7 @@ Logging is disabled by default. For diagnostics, use `PARK_DIAGNOSTICS=ON bash s
 - Replaces Linux ARM kuser atomic helpers with ARMv7 equivalents, including the compare/exchange carry flag convention.
 - Redirects native PVR texture requests to their matching PNG assets in the original archives.
 - Maps the Vita controls into native movement and gesture callbacks from the active gameplay update. Native collision, combos, skill unlocks and super-meter rules remain in use.
+- Replaces English help/tutorial/skill instructions and gesture illustrations with Vita controls as the resources load. Inline button symbols use the text renderer, and gesture illustrations stay visible throughout each animation. The original APK and OBB remain unchanged; controller icons are bundled in the VPK.
 - Decodes sound effects on a background worker and mixes up to 16 voices with a bounded sample cache. Preference writes also use a background worker with backup and retry handling.
 - Renders at 960x544 with a 30 FPS cap. Application title ID: `BPARK0001`.
 
@@ -35,10 +36,16 @@ Run these in Linux/WSL:
 ```sh
 python3 scripts/test-controls.py
 python3 scripts/test-audio-saves.py
+python3 scripts/test-prompts.py
+python3 scripts/test-text.py
 ```
 
 These compile the production controller, audio and preference code against host adapters. They cover input dispatch, sound loading and cancellation, cache pressure, delayed I/O, save coalescing and write failures. The audio/save checks use libsndfile and AddressSanitizer/UndefinedBehaviorSanitizer.
 
+The prompt and text checks cover resource replacements, full animation-frame coverage, inline button rendering, wrapping and clipped drawing under AddressSanitizer/UndefinedBehaviorSanitizer. Text previews use the APK's fonts when available, with DejaVu Sans as a fallback.
+
 ## Artwork
 
 Final LiveArea PNGs, generation prompts and artwork masters are in `extras/livearea/`. With ImageMagick installed, run `powershell -File scripts/prepare_livearea.ps1` to regenerate the indexed Vita-sized PNGs from the masters.
+
+Controller icons are drawn from vector shapes by `python scripts/prepare_prompts.py`, also using ImageMagick. SVG sources and final PNGs are in `extras/prompts/`.

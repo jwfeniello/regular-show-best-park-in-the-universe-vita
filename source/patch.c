@@ -1,5 +1,6 @@
 #include "park.h"
 #include "gamepad.h"
+#include "prompts.h"
 #include "utils/logger.h"
 #include "utils/dialog.h"
 #include <so_util/so_util.h>
@@ -60,6 +61,7 @@ static void *pvr_image(void *cache,const char *path) {
 void so_patch(void) {
     patch_kuser();
     park_gamepad_install();
+    park_prompts_install();
     add_image=(void *)park_symbol("_ZN7cocos2d14CCTextureCache8addImageEPKc");
     hook_addr(park_symbol("_ZN7cocos2d14CCTextureCache11addPVRImageEPKc"),(uintptr_t)pvr_image);
     l_info("Texture PNG fallback enabled; online services return unavailable");
